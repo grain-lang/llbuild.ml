@@ -1,0 +1,4 @@
+(library
+ (name bindings)
+ (synopsis "Ctypes bindings for llbuild")
+ (libraries ctypes.stubs ctypes))
