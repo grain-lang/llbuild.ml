@@ -1,3 +1,6 @@
 (executable
  (name main)
+ (flags
+  ; TODO Remove this once we actually start to use it.
+  (:standard -w -33))
  (libraries llbuild))
