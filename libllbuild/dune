@@ -2,7 +2,7 @@
  (name llbuild)
  (synopsis "libllbuild ocaml")
  (flags
-  (:standard -w -9 -cclib -lllbuild))
+  (:standard -w -9 -cclib -lllbuild -w -32))
  (libraries bindings ctypes.stubs ctypes ctypes.foreign))
 
 (rule

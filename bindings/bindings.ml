@@ -74,6 +74,17 @@ module Stubs =
 
     let void_ptr = ptr void
 
+    let llb_rule_is_scanning = constant "llb_rule_is_scanning" int64_t
+    let llb_rule_is_up_to_date = constant "llb_rule_is_up_to_date" int64_t
+    let llb_rule_is_complete = constant "llb_rule_is_complete" int64_t
+
+    let llb_rule_status_kind_t =
+      enum ~typedef:true "llb_rule_status_kind_t" [
+          Llb_rule_is_scanning,llb_rule_is_scanning;
+          Llb_rule_is_up_to_date,llb_rule_is_up_to_date;
+          Llb_rule_is_complete,llb_rule_is_complete;
+        ]
+
     (* buildvalue *)
     let llb_build_value_kind_invalid = constant "llb_build_value_kind_invalid" int64_t
     let llb_build_value_kind_virtual_input = constant "llb_build_value_kind_virtual_input" int64_t
@@ -360,7 +371,7 @@ module Stubs =
     type llb_task_interface_t
     let llb_task_interface_t : llb_task_interface_t structure typ = typedef (structure "llb_task_interface_t_") "llb_task_interface_t"
     let llb_task_interface_impl = field llb_task_interface_t "impl" void_ptr
-    let llb_task_interface_ctx = field llb_task_interface_t "ctx" void_ptr
+    (* let llb_task_interface_ctx = field llb_task_interface_t "ctx" void_ptr *)
     let () = seal llb_task_interface_t
 
     type llb_buildsystem_external_command_delegate_t
@@ -373,4 +384,61 @@ module Stubs =
     (* let llb_buildsystem_external_command_delegate_execute_command_ex = field llb_buildsystem_external_command_delegate_t "execute_command_ex" (static_funptr (void_ptr @-> ptr llb_buildsystem_command_t @-> ptr llb_buildsystem_interface_t @-> llb_task_interface_t @-> ptr llb_buildsystem_queue_job_context_t @-> returning (ptr llb_build_value))) *)
     let llb_buildsystem_external_command_delegate_is_result_value = field llb_buildsystem_external_command_delegate_t "is_result_valid" (static_funptr (void_ptr @-> ptr llb_buildsystem_command_t @-> ptr llb_build_value @-> returning bool))
     let () = seal llb_buildsystem_external_command_delegate_t
+
+    type llb_buildengine_t
+    let llb_buildengine_t : llb_buildengine_t structure typ = typedef (structure "llb_buildengine_t_") "llb_buildengine_t"
+
+    type llb_task_t
+    let llb_task_t : llb_task_t structure typ = typedef (structure "llb_task_t_") "llb_task_t"
+
+    type llb_rule_t
+    let llb_rule_t : llb_rule_t structure typ = typedef (structure "llb_rule_t_") "llb_rule_t"
+    let llb_rule_context = field llb_rule_t "context" void_ptr
+    let llb_rule_key = field llb_rule_t "key" llb_data_t
+    let llb_rule_create_task = field llb_rule_t "create_task" (static_funptr (void_ptr @-> void_ptr @-> returning (ptr llb_task_t)))
+    let llb_rule_is_result_valid = field llb_rule_t "is_result_valid" (static_funptr (void_ptr @-> void_ptr @-> ptr llb_rule_t @-> ptr llb_data_t @-> returning bool))
+    let llb_rule_updates_status = field llb_rule_t "update_status" (static_funptr (void_ptr @-> void_ptr @-> llb_rule_status_kind_t @-> returning void))
+    let () = seal llb_rule_t
+
+    type llb_buildengine_delegate_t
+    let llb_buildengine_delegate_t : llb_buildengine_delegate_t structure typ = typedef (structure "llb_buildengine_delegate_t_") "llb_buildengine_delegate_t"
+    let llb_buildengine_delegate_context = field llb_buildengine_delegate_t "context" void_ptr
+    let llb_buildengine_delegate_destroy_context = field llb_buildengine_delegate_t "destroy_context" (static_funptr (void_ptr @-> returning void))
+    let llb_buildengine_delegate_lookup_rule = field llb_buildengine_delegate_t "lookup_rule" (static_funptr (void_ptr @-> ptr llb_data_t @-> ptr llb_rule_t @-> returning void))
+    let llb_buildengine_delegate_error = field llb_buildengine_delegate_t "error" ((static_funptr (void_ptr @-> string @-> returning void)))
+    let () = seal llb_buildengine_delegate_t
+
+    type llb_task_delegate_t
+    let llb_task_delegate_t : llb_task_delegate_t structure typ = typedef (structure "llb_task_delegate_t_") "llb_task_delegate_t"
+    let llb_task_delegate_context = field llb_task_delegate_t "context" void_ptr
+    let llb_task_delegate_destroy_context = field llb_task_delegate_t "destroy_context" (static_funptr (void_ptr @-> returning void))
+    (* let llb_task_delegate_start = field llb_task_delegate_t "start" (static_funptr (void_ptr @-> void_ptr @-> llb_task_interface_t @-> returning void)) *)
+    (* let llb_task_delegate_provide_value = field llb_task_delegate_t "provide_value" (static_funptr (void_ptr @-> void_ptr @-> llb_task_interface_t @-> uintptr_t @-> ptr llb_data_t @-> returning void)) *)
+    (* let llb_task_delegate_inputs_available = field llb_task_delegate_t "inputs_available" (static_funptr (void_ptr @-> void_ptr @-> llb_task_interface_t @-> returning void)) *)
+    let () = seal llb_task_delegate_t
+
+    type llb_database_t
+    let llb_database_t : llb_database_t structure typ = typedef (structure "llb_database_t_") "llb_database_t"
+
+    type llb_database_key_id
+    let llb_database_key_id = typedef uint64_t "llb_database_key_id"
+
+    type llb_database_key_type
+    let llb_database_key_type = typedef string "llb_database_key_type"
+
+    type llb_database_fetch_result_t
+    let llb_database_fetch_result_t : llb_database_fetch_result_t structure typ = typedef (structure "llb_database_result_keys_t_") "llb_database_fetch_result_t"
+
+    type llb_database_result_t
+    let llb_database_result_t : llb_database_result_t structure typ = typedef (structure "llb_database_result_t_") "llb_database_result_t"
+    let llb_database_result_value = field llb_database_result_t "value" llb_data_t
+    let llb_database_result_signature = field llb_database_result_t "signature" uint64_t
+    let llb_database_result_computed_at = field llb_database_result_t "computed_at" uint64_t
+    let llb_database_result_built_at = field llb_database_result_t "built_at" uint64_t
+    let llb_database_result_start = field llb_database_result_t "start" double
+    let llb_database_result_end = field llb_database_result_t "end" double
+    let llb_database_result_dependencies = field llb_database_result_t "dependencies" (ptr llb_build_key_t)
+    let llb_database_result_dependencies_count = field llb_database_result_t "dependencies_count" uint32_t
+    let () = seal llb_database_result_t
+
   end
